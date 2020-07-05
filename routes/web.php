@@ -16,6 +16,11 @@ Route::get('/', 'MessagesController@index');
 Route::resource('messages', 'MessagesController');
 
 
+Route::get('/', 'TasksController@index');
+
+Route::resource('tasks', 'TasksController');
+
+
 // CRUD
 // メッセージの個別詳細ページ表示
 // Route::get('messages/{id}', 'MessagesController@show');
