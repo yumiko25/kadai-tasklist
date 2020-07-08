@@ -11,9 +11,7 @@
 |
 */
 
-Route::get('/', 'MessagesController@index');
 
-Route::resource('messages', 'MessagesController');
 
 
 Route::get('/', 'TasksController@index');
