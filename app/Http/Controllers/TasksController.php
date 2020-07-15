@@ -20,6 +20,20 @@ class TasksController extends Controller
         return view('tasks.index', [
             'tasks' => $tasks,
         ]);
+        
+        $data = [];
+        if (\Auth::check()) { 
+
+            $user = \Auth::user();
+        
+            $tasks = $user->tasks()->orderBy('created_at', 'desc')->paginate(10);
+
+            $data = [
+                'user' => $user,
+                'tasks' => $tasks,
+            ];
+        }
+        return view('welcome', $data);
     }
 
     /**
@@ -53,8 +67,13 @@ class TasksController extends Controller
         $task->content = $request->content;
         $task->status = $request->status; 
         $task->save();
+        
+        $request->user()->tasks()->create([
+            'content' => $request->content,
+            'status' => $request->status
+        ]);
 
-        return redirect('/');
+        return back();
     }
 
     /**
@@ -80,13 +99,14 @@ class TasksController extends Controller
      */
     public function edit($id)
     {
-         $task = Task::findOrFail($id);
+         $task = \App\Task::findOrFail($id);
          
-        return view('tasks.edit', [
-            'task' => $task,
-        ]);
+         if (\Auth::id() === $task->user_id) {
+             $task->edit();
+         }
+         
+        return back();
     }
-
     /**
      * Update the specified resource in storage.
      *
@@ -104,7 +124,7 @@ class TasksController extends Controller
         $task = Task::findOrFail($id);
         
         $task->content = $request->content;
-         $task->status = $request->status; 
+        $task->status = $request->status; 
         $task->save();
 
     
@@ -119,11 +139,12 @@ class TasksController extends Controller
      */
     public function destroy($id)
     {
-        $task = Task::findOrFail($id);
-    
-        $task->delete();
+        $task = \App\Task::findOrFail($id);
 
-        
-        return redirect('/');
+        if (\Auth::id() === $task->user_id) {
+            $task->delete();
+        }
+
+        return back();
     }
 }
