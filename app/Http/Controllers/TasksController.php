@@ -15,7 +15,7 @@ class TasksController extends Controller
      */
     public function index()
     {
-        $tasks = Task::all();
+         $tasks = Task::all();
 
         return view('tasks.index', [
             'tasks' => $tasks,
@@ -34,6 +34,8 @@ class TasksController extends Controller
             ];
         }
         return view('welcome', $data);
+        
+       
     }
 
     /**
@@ -56,26 +58,7 @@ class TasksController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
-    {
-        $this->validate($request, [
-           'content' => 'required|max:255',
-           'status' => 'required|max:10',
-        ]);
-
-        $task = new Task;
-        $task->content = $request->content;
-        $task->status = $request->status; 
-        $task->save();
-        
-        $request->user()->tasks()->create([
-            'content' => $request->content,
-            'status' => $request->status
-        ]);
-
-        return back();
-    }
-
+   
     /**
      * Display the specified resource.
      *
@@ -90,6 +73,23 @@ class TasksController extends Controller
             'task' => $task,
         ]);
     }
+    
+    public function store(Request $request)
+    {
+        $this->validate($request, [
+           'content' => 'required|max:255',
+           'status' => 'required|max:10',
+        ]);
+
+      
+        
+        $request->user()->tasks()->create([
+            'content' => $request->content,
+            'status' => $request->status
+        ]);
+
+        return back();
+    }
 
     /**
      * Show the form for editing the specified resource.
@@ -99,13 +99,12 @@ class TasksController extends Controller
      */
     public function edit($id)
     {
-         $task = \App\Task::findOrFail($id);
-         
-         if (\Auth::id() === $task->user_id) {
-             $task->edit();
-         }
-         
-        return back();
+        
+        $task = Task::findOrFail($id);
+
+        return view('tasks.edit', [
+            'task' => $task,
+        ]);
     }
     /**
      * Update the specified resource in storage.
@@ -124,7 +123,7 @@ class TasksController extends Controller
         $task = Task::findOrFail($id);
         
         $task->content = $request->content;
-        $task->status = $request->status; 
+        $task->status = $request->status;
         $task->save();
 
     
@@ -145,6 +144,6 @@ class TasksController extends Controller
             $task->delete();
         }
 
-        return back();
+        return redirect('/');
     }
 }
