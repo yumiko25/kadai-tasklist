@@ -67,10 +67,17 @@ class TasksController extends Controller
     {
         $task = Task::findOrFail($id);
 
-        return view('tasks.show', [
-            'task' => $task,
-        ]);
+        // $taskが自分自身のものであるか、場合分け
+        if (\Auth::id() === $task->user_id) {
+            return view('tasks.show', [
+                'task' => $task,
+            ]);
+        
+        }
+         return back();
     }
+        
+    
     
     public function store(Request $request)
     {
@@ -97,13 +104,19 @@ class TasksController extends Controller
      */
     public function edit($id)
     {
-        
         $task = Task::findOrFail($id);
 
-        return view('tasks.edit', [
-            'task' => $task,
-        ]);
+        // $taskが自分自身のものであるか、場合分け
+        if (\Auth::id() === $task->user_id) {
+            return view('tasks.edit', [
+                'task' => $task,
+            ]);
+        
+        }
+         return back();
     }
+       
+    
     /**
      * Update the specified resource in storage.
      *
@@ -119,13 +132,16 @@ class TasksController extends Controller
         ]);
         
         $task = Task::findOrFail($id);
-        
-        $task->content = $request->content;
-        $task->status = $request->status;
-        $task->save();
-
+        if (\Auth::id() === $task->user_id) {
     
-        return redirect('/');
+            $task->content = $request->content;
+            $task->status = $request->status;
+            $task->save();
+        
+            return redirect('/');
+        }
+        return back();
+        
     }
 
     /**
@@ -141,7 +157,7 @@ class TasksController extends Controller
         if (\Auth::id() === $task->user_id) {
             $task->delete();
         }
-
+        
         return redirect('/');
     }
 }
