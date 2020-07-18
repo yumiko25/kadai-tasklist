@@ -74,7 +74,7 @@ class TasksController extends Controller
             ]);
         
         }
-         return back();
+         return redirect('/');
     }
         
     
@@ -113,7 +113,7 @@ class TasksController extends Controller
             ]);
         
         }
-         return back();
+     return redirect('/');
     }
        
     
@@ -140,7 +140,7 @@ class TasksController extends Controller
         
             return redirect('/');
         }
-        return back();
+        return redirect('/');
         
     }
 
